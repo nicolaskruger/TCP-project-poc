@@ -1,11 +1,25 @@
-/**
- * @file This is the entrypoint for your project.
- * If used as a node module, when someone runs
- * `import stuff from 'your-module'` (typescript)
- * or `const stuff = require('your-module')` (javascript)
- * whatever is exported here is what they'll get.
- * For small projects you could put all your code right in this file.
- */
+// happy coding 👻
+import { createServer, Socket } from "net"
 
-export * from './lib/sample-module.js';
-export default undefined;
+const server = createServer((socket) => {
+    socket.write('Echo server\r\n')
+    socket.pipe(socket)
+})
+
+server.listen(1337, '127.0.0.1')
+
+const client = new Socket();
+
+client.connect(1337, '127.0.0.1', function () {
+    console.log('Connected');
+    client.write('Hello, server! Love, Client.');
+});
+
+client.on('data', function (data) {
+    console.log('Received: ' + data);
+    client.destroy(); // kill client after server's response
+});
+
+client.on('close', function () {
+    console.log('Connection closed');
+});
